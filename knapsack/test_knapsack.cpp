@@ -5,7 +5,7 @@
 #include <sstream>
 #include <chrono>
 
-#include "Knapsack.h"
+#include "KnapsackApprox.h"
 using namespace std::chrono;
 
 void split(const std::string &s, char delim, std::vector<std::string> &elems) {
@@ -47,7 +47,6 @@ void testFile(std::string filename){
         
         std::vector<item_t> items;
         items.reserve(n);
-        //std::vector<bool> solution(n, false);
         int weight_solution = 0;
         
         std::getline(file,s);
@@ -56,24 +55,26 @@ void testFile(std::string filename){
             std::vector<std::string> l = split(s,',');
             items.emplace_back(stoi(l[1]), stoi(l[2]));
             if (stoi(l[3]) == 1) {
-                //solution[i] = true;
                 weight_solution += stoi(l[2]);
             }
         }
 
+        const double e = 0.5;
+
         high_resolution_clock::time_point t1 = high_resolution_clock::now();
-        Knapsack knapsack(items, capacity);
+        KnapsackApprox knapsack(items, capacity, e);
         high_resolution_clock::time_point t2 = high_resolution_clock::now();
         auto duration = duration_cast<milliseconds>( t2 - t1 ).count();
 
-        // Ya que los elementos en la mochila pueden diferir,
-        // queremos que por lo menos el peso sea menor o igual!
-        bool result_ok = true;
-        if (z != knapsack.profit() || weight_solution < knapsack.weight()){
-            result_ok = false;
-            std::cout << "Esparaba profit: " << z << " ; tuvimos: " << knapsack.profit() << std::endl;
-            std::cout << "Esperaba peso max: " << weight_solution << " ; tuvimos: " << knapsack.weight() << std::endl;
-        }
+        // Por ser un calculo aproximado queremos:
+    	// - Ganancia dentro del rango aproximado segun e
+    	// - Que cumpla con la capacidad
+	    bool result_ok = true;
+	    if (knapsack.profit() < z*(1.0-e) || knapsack.weight() > capacity){
+	        result_ok = false;
+	        std::cout << "Esparaba profit minimo de: " << z*(1.0-e) << " ; tuvimos: " << knapsack.profit() << std::endl;
+	        std::cout << "Esperaba peso max: " << capacity << " ; tuvimos: " << knapsack.weight() << std::endl;
+	    }
 
         std::cout << "time: " << duration << " ms"<< std::endl;
         std::cout <<( result_ok ? "OK" : "FAILED" )<< std::endl;
