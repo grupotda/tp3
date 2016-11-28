@@ -13,14 +13,14 @@ KnapsackApprox::KnapsackApprox(const std::vector<item_t>& items, int capacity, d
         }
     }
 
-    // Metodo kleinberg (con ceiling):
-    double b = (e / (2*items.size())) * max_value;
+    // Metodo de Princeton (CS423) (o Wikipedia) (con floor):
+    double k = e * ((double)max_value / (double)items.size());
 
-    if (b > 1.0) { // Tiene sentido aproximar
+    if (k > 1.0) { // Tiene sentido aproximar
         // Generamos los nuevos valores:
         std::vector<item_t> temp_items(items);
         for (item_t& item : temp_items) {
-            item.value = (int) ceil(item.value / b);
+            item.value = (int) floor(item.value / k);
         }
 
         // Calculamos:
