@@ -16,7 +16,8 @@ def graph_from_adj_matrix(matrix):
     graph = Digraph(len(matrix))
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
-            graph.add_edge(i, j, matrix[i][j])
+            if matrix[i][j] != 0:
+                graph.add_edge(i, j, matrix[i][j])
     return graph
 
 
