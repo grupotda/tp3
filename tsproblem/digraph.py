@@ -3,11 +3,16 @@
 
 class Edge:
     """
-    DOC
+    Arista de un grafo
     """
 
     def __init__(self, src, dst, weight):
-        """"""
+        """
+        Construye una arista de un grafo
+        :param src: vertice de origen de la arista
+        :param dst: vertice al que esta destinado la arista
+        :param weight: peso de la arista
+        """
         self.src = src
         self.dst = dst
         self.weight = weight
@@ -15,16 +20,17 @@ class Edge:
     def __str__(self):
         return "%d->%d (%d)" % (self.src, self.dst, self.weight)
 
-    def get_weight(self):
-        return self.weight
-
-    def get_dst(self):
-        return self.dst
-
 
 class Digraph:
     """
-    DOC
+    Grafo no dirigido con un número fijo de vértices.
+
+    Los vértices son siempre números enteros no negativos. El primer vértice
+    es 0.
+
+    El grafo se crea vacío, se añaden las aristas con add_edge(). Una vez
+    creadas, las aristas no se pueden eliminar, pero siempre se puede añadir
+    nuevas aristas.
     """
 
     def __init__(self, V):
@@ -32,7 +38,6 @@ class Digraph:
         Construye un grafo sin aristas de V vertices.
         :param V: cantidad de vertices
         """
-        # fijarse pasar a lazy initialization
         self.vertices = [[] for _ in xrange(V)]
 
     def V(self):
@@ -72,6 +77,7 @@ class Digraph:
         :param dst: el vertice destino, debe pertenecer al grafo.
         :param weight: el peso asociado a la arista.
         """
+        if dst >= self.V(): raise IndexError("Vertice desconocido")
         self.vertices[src].append(Edge(src, dst, weight))
 
     def __iter__(self):
@@ -104,12 +110,12 @@ class Digraph:
         while node is not None:
             visited_nodes.append(node)
             available_edges += self.vertices[node]
-            available_edges.sort(key=lambda e: e.get_weight())
+            available_edges.sort(key=lambda e: e.weight)
             while available_edges:
                 nxt = available_edges.pop(0)
-                if not nxt.get_dst() in visited_nodes:
+                if not nxt.dst in visited_nodes:
                     tree_edges.append(nxt)
-                    node = nxt.get_dst()
+                    node = nxt.dst
                     break
             if not available_edges:
                 node = None
@@ -124,6 +130,6 @@ class Digraph:
         """Devuelve el peso de la arista entre src y dst si existe"""
         edges = self.vertices[src]
         for edge in edges:
-            if edge.get_dst() == dst:
-                return edge.get_weight()
+            if edge.dst == dst:
+                return edge.weight
         raise ValueError("Arista no existe")
