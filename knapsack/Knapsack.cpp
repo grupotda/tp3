@@ -1,4 +1,3 @@
-#include <iostream>
 #include <cstddef>
 #include "Knapsack.h"
 
