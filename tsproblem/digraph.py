@@ -1,13 +1,20 @@
 #!/usr/bin/python
 #  -*- coding: utf-8 -*-
+from indexed_heap import IndexedHeap
+
 
 class Edge:
     """
-    DOC
+    Arista de un grafo
     """
 
     def __init__(self, src, dst, weight):
-        """"""
+        """
+        Construye una arista de un grafo
+        :param src: vertice de origen de la arista
+        :param dst: vertice al que esta destinado la arista
+        :param weight: peso de la arista
+        """
         self.src = src
         self.dst = dst
         self.weight = weight
@@ -15,16 +22,17 @@ class Edge:
     def __str__(self):
         return "%d->%d (%d)" % (self.src, self.dst, self.weight)
 
-    def get_weight(self):
-        return self.weight
-
-    def get_dst(self):
-        return self.dst
-
 
 class Digraph:
     """
-    DOC
+    Grafo no dirigido con un número fijo de vértices.
+
+    Los vértices son siempre números enteros no negativos. El primer vértice
+    es 0.
+
+    El grafo se crea vacío, se añaden las aristas con add_edge(). Una vez
+    creadas, las aristas no se pueden eliminar, pero siempre se puede añadir
+    nuevas aristas.
     """
 
     def __init__(self, V):
@@ -32,7 +40,6 @@ class Digraph:
         Construye un grafo sin aristas de V vertices.
         :param V: cantidad de vertices
         """
-        # fijarse pasar a lazy initialization
         self.vertices = [[] for _ in xrange(V)]
 
     def V(self):
@@ -72,6 +79,7 @@ class Digraph:
         :param dst: el vertice destino, debe pertenecer al grafo.
         :param weight: el peso asociado a la arista.
         """
+        if dst >= self.V(): raise IndexError("Vertice desconocido")
         self.vertices[src].append(Edge(src, dst, weight))
 
     def __iter__(self):
@@ -88,35 +96,41 @@ class Digraph:
             for edge in aristas:
                 yield edge
 
-    def minimum_spanning_tree(self):
+    def minimum_spanning_tree(self, root=0):
         """
-        Implementacion de Prim. Solo funciona para digrafos completos
-        y simetricos (equivalentes a grafos no dirigidos).
-        :return: arbol de tendido minimo
+        Implementacion del algoritmo de Prim.
+        Da por sentado que esta instancia de Digrafo es un Grafo. Es decir, que
+        una arista esta representada por dos aristas dirigidas del mismo peso.
+        Inicia el algoritmo desde el vertice raiz "root", por defecto = 0.
+        :return Digraph: arbol de tendido minimo dirigido
         """
         # Setup
-        visited_nodes = []
-        available_edges = []
-        tree_edges = []
-        node = 0
+        visited = [False] * self.V()
+        # edge_to = {dstVertex: Edge(srcVertex, dstVertex, weight)}
+        edge_to = {}
+        # heap inicializado con vertice raiz del arbol
+        heap = IndexedHeap()
+        heap._push(root, 0)
 
         # Execution
-        while node is not None:
-            visited_nodes.append(node)
-            available_edges += self.vertices[node]
-            available_edges.sort(key=lambda e: e.get_weight())
-            while available_edges:
-                nxt = available_edges.pop(0)
-                if not nxt.get_dst() in visited_nodes:
-                    tree_edges.append(nxt)
-                    node = nxt.get_dst()
-                    break
-            if not available_edges:
-                node = None
+        while heap:
+            v = heap.pop()
+            visited[v] = True
+
+            for e in self.adj_e(v):
+                if not visited[e.dst]:
+                    new_priority = e.weight
+                    if e.dst in heap:
+                        if new_priority < heap[e.dst]:
+                            edge_to[e.dst] = e
+                            heap._decreaseKey(e.dst, new_priority)
+                    else:
+                        edge_to[e.dst] = e
+                        heap._push(e.dst, new_priority)
 
         # Return
         tree = Digraph(self.V())
-        for edge in tree_edges:
+        for edge in edge_to.values():
             tree.add_edge(edge.src, edge.dst, edge.weight)
         return tree
 
@@ -124,6 +138,6 @@ class Digraph:
         """Devuelve el peso de la arista entre src y dst si existe"""
         edges = self.vertices[src]
         for edge in edges:
-            if edge.get_dst() == dst:
-                return edge.get_weight()
+            if edge.dst == dst:
+                return edge.weight
         raise ValueError("Arista no existe")
