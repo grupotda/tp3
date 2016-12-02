@@ -56,21 +56,30 @@ if __name__ == "__main__":
     start_time = timeit.default_timer()
     m = matrix_from_file("matrices/p01.m")
     g = graph_from_adj_matrix(m)
-    mst = g.minimum_spanning_tree(ROOT)
     p01 = aprox_tsp_algorithm(g, ROOT)
     res = timeit.default_timer() - start_time
     print "15 nodos:", res, "segundos"
     start_time = timeit.default_timer()
     m = matrix_from_file("matrices/gr17.m")
     g = graph_from_adj_matrix(m)
-    mst = g.minimum_spanning_tree(ROOT)
     gr17 = aprox_tsp_algorithm(g, ROOT)
     res = timeit.default_timer() - start_time
     print "17 nodos:", res, "segundos"
     start_time = timeit.default_timer()
     m = matrix_from_file("matrices/fri26.m")
     g = graph_from_adj_matrix(m)
-    mst = g.minimum_spanning_tree(ROOT)
     fri26 = aprox_tsp_algorithm(g, ROOT)
     res = timeit.default_timer() - start_time
     print "26 nodos", res, "segundos"
+    start_time = timeit.default_timer()
+    m = matrix_from_file("matrices/dantzig42.m")
+    g = graph_from_adj_matrix(m)
+    d42 = aprox_tsp_algorithm(g, ROOT)
+    res = timeit.default_timer() - start_time
+    print "42 nodos:", res, "segundos"
+    start_time = timeit.default_timer()
+    m = matrix_from_file("matrices/att48.m")
+    g = graph_from_adj_matrix(m)
+    att48 = aprox_tsp_algorithm(g, ROOT)
+    res = timeit.default_timer() - start_time
+    print "48 nodos:", res, "segundos"

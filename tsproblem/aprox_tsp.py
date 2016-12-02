@@ -7,7 +7,7 @@ def matrix_from_file(filename):
     model_matrix = []
     with open(filename, 'r') as f:
         for line in f:
-            model_matrix.append([int(s) for s in line.split(' ')])
+            model_matrix.append([int(s) for s in line.split()])
     return model_matrix
 
 
