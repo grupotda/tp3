@@ -133,11 +133,3 @@ class Digraph:
         for edge in edge_to.values():
             tree.add_edge(edge.src, edge.dst, edge.weight)
         return tree
-
-    def get_weight(self, src, dst):
-        """Devuelve el peso de la arista entre src y dst si existe"""
-        edges = self.vertices[src]
-        for edge in edges:
-            if edge.dst == dst:
-                return edge.weight
-        raise ValueError("Arista no existe")
